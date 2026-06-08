@@ -1,5 +1,5 @@
 const API_URL =
-"https://SEU_WEBAPP_AQUI";
+"https://script.google.com/macros/s/AKfycbwysnYv5hJixkVW83nJLMx0soAwsfhZ7s_mlqA9xsgPx1Y_9_M7k9C-p-639sxtMMmB/exec";
 
 const searchInput =
 document.getElementById("searchInput");
