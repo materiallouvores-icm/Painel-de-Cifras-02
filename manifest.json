@@ -1,0 +1,15 @@
+{
+  "name": "PAINEL DE CIFRAS",
+  "short_name": "CIFRAS",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#020817",
+  "theme_color": "#020817",
+  "icons": [
+    {
+      "src": "icone.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
