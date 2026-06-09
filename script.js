@@ -1,9 +1,6 @@
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwysnYv5hJixkVW83nJLMx0soAwsfhZ7s_mlqA9xsgPx1Y_9_M7k9C-p-639sxtMMmB/exec";
 
-const DRIVE_FOLDER_URL =
-"https://drive.google.com/drive/folders/1kfzEjjv3_h_DPtT6Z-q_5bh8utiwFikJ";
-
 const searchInput =
   document.getElementById("searchInput");
 
@@ -15,9 +12,6 @@ const results =
 
 const playlist =
   document.getElementById("playlist");
-
-const explorerBtn =
-  document.getElementById("explorerBtn");
 
 /* IMAGENS */
 
@@ -185,8 +179,6 @@ function renderPlaylist(){
     const nameElement =
       div.querySelector(".playlist-name");
 
-    /* ABRIR IMAGEM */
-
     nameElement.addEventListener(
       "click",
       () => {
@@ -195,8 +187,6 @@ function renderPlaylist(){
 
       }
     );
-
-    /* SEGURAR PARA REMOVER */
 
     let pressTimer;
 
@@ -305,20 +295,6 @@ function openImage(id){
   );
 
 }
-
-/* EXPLORADOR */
-
-explorerBtn.addEventListener(
-  "click",
-  () => {
-
-    window.open(
-      DRIVE_FOLDER_URL,
-      "_blank"
-    );
-
-  }
-);
 
 /* INICIAR */
 
