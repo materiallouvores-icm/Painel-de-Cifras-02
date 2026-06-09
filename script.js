@@ -1,32 +1,51 @@
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwysnYv5hJixkVW83nJLMx0soAwsfhZ7s_mlqA9xsgPx1Y_9_M7k9C-p-639sxtMMmB/exec";
 
+const DRIVE_FOLDER_URL =
+"https://drive.google.com/drive/folders/1kfzEjjv3_h_DPtT6Z-q_5bh8utiwFikJ";
+
 const searchInput =
-document.getElementById("searchInput");
+  document.getElementById("searchInput");
 
 const searchBtn =
-document.getElementById("searchBtn");
+  document.getElementById("searchBtn");
 
 const results =
-document.getElementById("results");
+  document.getElementById("results");
 
 const playlist =
-document.getElementById("playlist");
+  document.getElementById("playlist");
 
 const explorerBtn =
-document.getElementById("explorerBtn");
+  document.getElementById("explorerBtn");
+
+/* IMAGENS */
 
 let images = [];
 
+/* LISTA */
+
 let selectedSongs = [];
 
+/* CARREGA DADOS DO APPS SCRIPT */
+
 fetch(API_URL)
-.then(response => response.json())
-.then(data => {
+  .then(response => response.json())
+  .then(data => {
 
-  images = data;
+    images = data;
 
-});
+  })
+  .catch(error => {
+
+    console.error(
+      "Erro ao carregar imagens:",
+      error
+    );
+
+  });
+
+/* BUSCA */
 
 searchBtn.addEventListener(
   "click",
@@ -35,7 +54,7 @@ searchBtn.addEventListener(
 
 searchInput.addEventListener(
   "keypress",
-  e => {
+  (e) => {
 
     if(e.key === "Enter"){
 
@@ -59,20 +78,21 @@ function searchSongs(){
     return;
   }
 
-  const filtered =
-    images.filter(item =>
+  const filtered = images.filter(item =>
 
-      item.name
-        .toLowerCase()
-        .includes(value)
+    item.name
+      .toLowerCase()
+      .includes(value)
 
-    );
+  );
 
   if(filtered.length === 0){
 
     results.innerHTML = `
       <div class="result-item">
-        Nenhum resultado encontrado
+        <div class="result-name">
+          Nenhum resultado encontrado
+        </div>
       </div>
     `;
 
@@ -85,8 +105,7 @@ function searchSongs(){
     const div =
       document.createElement("div");
 
-    div.className =
-      "result-item";
+    div.className = "result-item";
 
     div.innerHTML = `
       <div class="result-name">
@@ -109,6 +128,8 @@ function searchSongs(){
 
 }
 
+/* ADICIONAR À LISTA */
+
 function addToPlaylist(item){
 
   const exists =
@@ -128,6 +149,8 @@ function addToPlaylist(item){
 
 }
 
+/* RENDERIZA */
+
 function renderPlaylist(){
 
   playlist.innerHTML = "";
@@ -146,13 +169,12 @@ function renderPlaylist(){
 
   }
 
-  selectedSongs.forEach((item,index)=>{
+  selectedSongs.forEach((item, index) => {
 
     const div =
       document.createElement("div");
 
-    div.className =
-      "playlist-item";
+    div.className = "playlist-item";
 
     div.innerHTML = `
       <div class="playlist-name">
@@ -160,19 +182,94 @@ function renderPlaylist(){
       </div>
     `;
 
-    div
-      .querySelector(".playlist-name")
-      .addEventListener(
-        "click",
-        () => {
+    const nameElement =
+      div.querySelector(".playlist-name");
 
-          window.open(
-            `https://lh3.googleusercontent.com/d/${item.id}`,
-            "_blank"
-          );
+    /* ABRIR IMAGEM */
 
-        }
-      );
+    nameElement.addEventListener(
+      "click",
+      () => {
+
+        openImage(item.id);
+
+      }
+    );
+
+    /* SEGURAR PARA REMOVER */
+
+    let pressTimer;
+
+    nameElement.addEventListener(
+      "touchstart",
+      () => {
+
+        pressTimer = setTimeout(() => {
+
+          const confirmDelete =
+            confirm(
+              `Deseja remover "${item.name}" da lista?`
+            );
+
+          if(confirmDelete){
+
+            removeFromPlaylist(item.id);
+
+          }
+
+        }, 700);
+
+      }
+    );
+
+    nameElement.addEventListener(
+      "touchend",
+      () => {
+
+        clearTimeout(pressTimer);
+
+      }
+    );
+
+    nameElement.addEventListener(
+      "mousedown",
+      () => {
+
+        pressTimer = setTimeout(() => {
+
+          const confirmDelete =
+            confirm(
+              `Deseja remover "${item.name}" da lista?`
+            );
+
+          if(confirmDelete){
+
+            removeFromPlaylist(item.id);
+
+          }
+
+        }, 700);
+
+      }
+    );
+
+    nameElement.addEventListener(
+      "mouseup",
+      () => {
+
+        clearTimeout(pressTimer);
+
+      }
+    );
+
+    nameElement.addEventListener(
+      "mouseleave",
+      () => {
+
+        clearTimeout(pressTimer);
+
+      }
+    );
 
     playlist.appendChild(div);
 
@@ -180,16 +277,49 @@ function renderPlaylist(){
 
 }
 
+/* REMOVER */
+
+function removeFromPlaylist(id){
+
+  selectedSongs =
+    selectedSongs.filter(item =>
+
+      item.id !== id
+
+    );
+
+  renderPlaylist();
+
+}
+
+/* ABRIR IMAGEM */
+
+function openImage(id){
+
+  const imageUrl =
+    `https://lh3.googleusercontent.com/d/${id}`;
+
+  window.open(
+    imageUrl,
+    "_blank"
+  );
+
+}
+
+/* EXPLORADOR */
+
 explorerBtn.addEventListener(
   "click",
   () => {
 
     window.open(
-      API_URL,
+      DRIVE_FOLDER_URL,
       "_blank"
     );
 
   }
 );
+
+/* INICIAR */
 
 renderPlaylist();
