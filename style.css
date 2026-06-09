@@ -126,14 +126,30 @@ body{
 /* BOTÃO EXPLORADOR */
 
 #explorerBtn{
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  text-decoration:none;
+
   border:none;
+
   border-radius:16px;
+
   padding:14px 20px;
+
   background:#2563eb;
+
   color:#fff;
+
   font-size:16px;
+
   font-weight:bold;
+
   cursor:pointer;
+
   transition:.2s;
 }
 
