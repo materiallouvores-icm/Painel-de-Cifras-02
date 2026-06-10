@@ -1,6 +1,15 @@
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwysnYv5hJixkVW83nJLMx0soAwsfhZ7s_mlqA9xsgPx1Y_9_M7k9C-p-639sxtMMmB/exec";
 
+const CACHE_KEY =
+"painelCifrasCache";
+
+const CACHE_TIME_KEY =
+"painelCifrasCacheTime";
+
+const CACHE_DURATION =
+24 * 60 * 60 * 1000; // 24 horas
+
 const searchInput =
   document.getElementById("searchInput");
 
@@ -13,31 +22,82 @@ const results =
 const playlist =
   document.getElementById("playlist");
 
-/* IMAGENS */
-
 let images = [];
-
-/* LISTA */
 
 let selectedSongs = [];
 
-/* CARREGA DADOS DO APPS SCRIPT */
+/* CARREGAMENTO */
 
-fetch(API_URL)
-  .then(response => response.json())
-  .then(data => {
+loadImages();
+
+async function loadImages(){
+
+  const cachedData =
+    localStorage.getItem(
+      CACHE_KEY
+    );
+
+  const cachedTime =
+    localStorage.getItem(
+      CACHE_TIME_KEY
+    );
+
+  const now =
+    Date.now();
+
+  if(
+    cachedData &&
+    cachedTime &&
+    now - Number(cachedTime)
+      < CACHE_DURATION
+  ){
+
+    images =
+      JSON.parse(cachedData);
+
+    console.log(
+      "Imagens carregadas do cache local"
+    );
+
+    return;
+
+  }
+
+  try{
+
+    const response =
+      await fetch(API_URL);
+
+    const data =
+      await response.json();
 
     images = data;
 
-  })
-  .catch(error => {
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify(data)
+    );
+
+    localStorage.setItem(
+      CACHE_TIME_KEY,
+      now.toString()
+    );
+
+    console.log(
+      "Imagens carregadas do Apps Script"
+    );
+
+  }
+  catch(error){
 
     console.error(
       "Erro ao carregar imagens:",
       error
     );
 
-  });
+  }
+
+}
 
 /* BUSCA */
 
@@ -72,13 +132,14 @@ function searchSongs(){
     return;
   }
 
-  const filtered = images.filter(item =>
+  const filtered =
+    images.filter(item =>
 
-    item.name
-      .toLowerCase()
-      .includes(value)
+      item.name
+        .toLowerCase()
+        .includes(value)
 
-  );
+    );
 
   if(filtered.length === 0){
 
@@ -99,7 +160,8 @@ function searchSongs(){
     const div =
       document.createElement("div");
 
-    div.className = "result-item";
+    div.className =
+      "result-item";
 
     div.innerHTML = `
       <div class="result-name">
@@ -122,7 +184,7 @@ function searchSongs(){
 
 }
 
-/* ADICIONAR À LISTA */
+/* ADICIONAR */
 
 function addToPlaylist(item){
 
@@ -143,7 +205,22 @@ function addToPlaylist(item){
 
 }
 
-/* RENDERIZA */
+/* REMOVER */
+
+function removeFromPlaylist(id){
+
+  selectedSongs =
+    selectedSongs.filter(item =>
+
+      item.id !== id
+
+    );
+
+  renderPlaylist();
+
+}
+
+/* LISTA */
 
 function renderPlaylist(){
 
@@ -163,12 +240,13 @@ function renderPlaylist(){
 
   }
 
-  selectedSongs.forEach((item, index) => {
+  selectedSongs.forEach((item,index)=>{
 
     const div =
       document.createElement("div");
 
-    div.className = "playlist-item";
+    div.className =
+      "playlist-item";
 
     div.innerHTML = `
       <div class="playlist-name">
@@ -177,7 +255,9 @@ function renderPlaylist(){
     `;
 
     const nameElement =
-      div.querySelector(".playlist-name");
+      div.querySelector(
+        ".playlist-name"
+      );
 
     nameElement.addEventListener(
       "click",
@@ -190,75 +270,59 @@ function renderPlaylist(){
 
     let pressTimer;
 
-    nameElement.addEventListener(
-      "touchstart",
-      () => {
+    function iniciarRemocao(){
 
-        pressTimer = setTimeout(() => {
+      pressTimer =
+        setTimeout(() => {
 
-          const confirmDelete =
+          const ok =
             confirm(
               `Deseja remover "${item.name}" da lista?`
             );
 
-          if(confirmDelete){
+          if(ok){
 
-            removeFromPlaylist(item.id);
+            removeFromPlaylist(
+              item.id
+            );
 
           }
 
-        }, 700);
+        },700);
 
-      }
+    }
+
+    function cancelarRemocao(){
+
+      clearTimeout(
+        pressTimer
+      );
+
+    }
+
+    nameElement.addEventListener(
+      "touchstart",
+      iniciarRemocao
     );
 
     nameElement.addEventListener(
       "touchend",
-      () => {
-
-        clearTimeout(pressTimer);
-
-      }
+      cancelarRemocao
     );
 
     nameElement.addEventListener(
       "mousedown",
-      () => {
-
-        pressTimer = setTimeout(() => {
-
-          const confirmDelete =
-            confirm(
-              `Deseja remover "${item.name}" da lista?`
-            );
-
-          if(confirmDelete){
-
-            removeFromPlaylist(item.id);
-
-          }
-
-        }, 700);
-
-      }
+      iniciarRemocao
     );
 
     nameElement.addEventListener(
       "mouseup",
-      () => {
-
-        clearTimeout(pressTimer);
-
-      }
+      cancelarRemocao
     );
 
     nameElement.addEventListener(
       "mouseleave",
-      () => {
-
-        clearTimeout(pressTimer);
-
-      }
+      cancelarRemocao
     );
 
     playlist.appendChild(div);
@@ -267,30 +331,12 @@ function renderPlaylist(){
 
 }
 
-/* REMOVER */
-
-function removeFromPlaylist(id){
-
-  selectedSongs =
-    selectedSongs.filter(item =>
-
-      item.id !== id
-
-    );
-
-  renderPlaylist();
-
-}
-
 /* ABRIR IMAGEM */
 
 function openImage(id){
 
-  const imageUrl =
-    `https://lh3.googleusercontent.com/d/${id}`;
-
   window.open(
-    imageUrl,
+    `https://lh3.googleusercontent.com/d/${id}`,
     "_blank"
   );
 
