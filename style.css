@@ -288,3 +288,15 @@ body{
   }
 
 }
+
+.playlist-item{
+  touch-action:none;
+}
+
+.playlist-item.dragging{
+  opacity:.5;
+}
+
+.playlist-item.drag-over{
+  border:2px solid #ff3131;
+}
