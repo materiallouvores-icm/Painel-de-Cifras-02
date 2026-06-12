@@ -242,6 +242,8 @@ function renderPlaylist(){
 
   selectedSongs.forEach((item,index)=>{
 
+  const currentIndex = index;
+
     const div =
       document.createElement("div");
 
