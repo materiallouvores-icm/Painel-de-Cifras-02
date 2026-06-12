@@ -26,6 +26,10 @@ let images = [];
 
 let selectedSongs = [];
 
+let draggedIndex = null;
+
+let currentDragElement = null;
+
 /* CARREGAMENTO */
 
 loadImages();
@@ -250,6 +254,9 @@ function renderPlaylist(){
     div.className =
       "playlist-item";
 
+    div.dataset.index =
+  currentIndex;
+
     div.innerHTML = `
       <div class="playlist-name">
         ${index + 1}. ${item.name}
@@ -327,9 +334,174 @@ function renderPlaylist(){
       cancelarRemocao
     );
 
+    enableTouchDrag(
+  div,
+  currentIndex
+);
+
     playlist.appendChild(div);
 
   });
+
+}
+
+function enableTouchDrag(
+  element,
+  index
+){
+
+  let startY = 0;
+
+  element.addEventListener(
+    "touchstart",
+    (e)=>{
+
+      startY =
+        e.touches[0].clientY;
+
+      draggedIndex =
+        index;
+
+      currentDragElement =
+        element;
+
+      element.classList.add(
+        "dragging"
+      );
+
+    }
+  );
+
+  element.addEventListener(
+    "touchmove",
+    (e)=>{
+
+      if(
+        draggedIndex === null
+      ){
+        return;
+      }
+
+      const touch =
+        e.touches[0];
+
+      const target =
+        document.elementFromPoint(
+          touch.clientX,
+          touch.clientY
+        );
+
+      const item =
+        target?.closest(
+          ".playlist-item"
+        );
+
+      document
+        .querySelectorAll(
+          ".playlist-item"
+        )
+        .forEach(el=>{
+
+          el.classList.remove(
+            "drag-over"
+          );
+
+        });
+
+      if(
+        item &&
+        item !== element
+      ){
+
+        item.classList.add(
+          "drag-over"
+        );
+
+      }
+
+    }
+  );
+
+  element.addEventListener(
+    "touchend",
+    (e)=>{
+
+      if(
+        draggedIndex === null
+      ){
+        return;
+      }
+
+      const touch =
+        e.changedTouches[0];
+
+      const target =
+        document.elementFromPoint(
+          touch.clientX,
+          touch.clientY
+        );
+
+      const item =
+        target?.closest(
+          ".playlist-item"
+        );
+
+      document
+        .querySelectorAll(
+          ".playlist-item"
+        )
+        .forEach(el=>{
+
+          el.classList.remove(
+            "drag-over"
+          );
+
+        });
+
+      if(
+        item
+      ){
+
+        const newIndex =
+          Number(
+            item.dataset.index
+          );
+
+        if(
+          newIndex !==
+          draggedIndex
+        ){
+
+          const movedItem =
+            selectedSongs.splice(
+              draggedIndex,
+              1
+            )[0];
+
+          selectedSongs.splice(
+            newIndex,
+            0,
+            movedItem
+          );
+
+          renderPlaylist();
+
+        }
+
+      }
+
+      element.classList.remove(
+        "dragging"
+      );
+
+      draggedIndex =
+        null;
+
+      currentDragElement =
+        null;
+
+    }
+  );
 
 }
 
