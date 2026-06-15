@@ -2,7 +2,7 @@
   "name": "PAINEL DE CIFRAS",
   "short_name": "CIFRAS",
   "start_url": "./",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#020817",
   "theme_color": "#020817",
   "icons": [
