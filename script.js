@@ -509,10 +509,58 @@ function enableTouchDrag(
 
 function openImage(id){
 
-  window.open(
-    `https://lh3.googleusercontent.com/d/${id}`,
-    "_blank"
+  const viewer =
+    document.createElement("div");
+
+  viewer.id =
+    "fullscreenViewer";
+
+  viewer.innerHTML = `
+    <button id="closeViewer">
+      ← Voltar
+    </button>
+
+    <img
+      id="fullscreenImage"
+      src="https://lh3.googleusercontent.com/d/${id}"
+      alt="Louvor"
+    >
+  `;
+
+  document.body.appendChild(
+    viewer
   );
+
+  if(viewer.requestFullscreen){
+
+    viewer
+      .requestFullscreen()
+      .catch(()=>{});
+
+  }
+
+  document
+    .getElementById(
+      "closeViewer"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        if(
+          document.fullscreenElement
+        ){
+
+          document
+            .exitFullscreen()
+            .catch(()=>{});
+
+        }
+
+        viewer.remove();
+
+      }
+    );
 
 }
 
