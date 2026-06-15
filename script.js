@@ -554,3 +554,31 @@ if ("serviceWorker" in navigator) {
       console.log("SW registrado");
     });
 }
+
+window.addEventListener(
+  "popstate",
+  () => {
+
+    const viewer =
+      document.getElementById(
+        "fullscreenViewer"
+      );
+
+    if(!viewer){
+      return;
+    }
+
+    if(
+      document.fullscreenElement
+    ){
+
+      document
+        .exitFullscreen()
+        .catch(()=>{});
+
+    }
+
+    viewer.remove();
+
+  }
+);
