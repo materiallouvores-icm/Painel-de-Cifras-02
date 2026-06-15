@@ -320,24 +320,3 @@ body{
   user-select:none;
   -webkit-user-drag:none;
 }
-
-#closeViewer{
-  position:fixed;
-  top:20px;
-  left:20px;
-  z-index:1000000;
-
-  border:none;
-  padding:12px 18px;
-
-  border-radius:12px;
-
-  background:rgba(0,0,0,.7);
-
-  color:#fff;
-
-  font-size:18px;
-  font-weight:bold;
-
-  cursor:pointer;
-}
