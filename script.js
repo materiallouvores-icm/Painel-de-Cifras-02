@@ -509,6 +509,15 @@ function enableTouchDrag(
 
 function openImage(id){
 
+  const oldViewer =
+    document.getElementById(
+      "fullscreenViewer"
+    );
+
+  if(oldViewer){
+    oldViewer.remove();
+  }
+
   const viewer =
     document.createElement("div");
 
@@ -528,19 +537,10 @@ function openImage(id){
   );
 
   history.pushState(
-    { viewerOpen:true },
-    "",
-    "#viewer"
+  { image:true },
+  ""
   );
-
-  if(viewer.requestFullscreen){
-
-    viewer
-      .requestFullscreen()
-      .catch(()=>{});
-
-  }
-
+  
 }
 
 /* INICIAR */
@@ -579,6 +579,24 @@ window.addEventListener(
     }
 
     viewer.remove();
+
+  }
+);
+
+window.addEventListener(
+  "popstate",
+  () => {
+
+    const viewer =
+      document.getElementById(
+        "fullscreenViewer"
+      );
+
+    if(viewer){
+
+      viewer.remove();
+
+    }
 
   }
 );
