@@ -516,10 +516,6 @@ function openImage(id){
     "fullscreenViewer";
 
   viewer.innerHTML = `
-    <button id="closeViewer">
-      ← Voltar
-    </button>
-
     <img
       id="fullscreenImage"
       src="https://lh3.googleusercontent.com/d/${id}"
@@ -531,6 +527,12 @@ function openImage(id){
     viewer
   );
 
+  history.pushState(
+    { viewerOpen:true },
+    "",
+    "#viewer"
+  );
+
   if(viewer.requestFullscreen){
 
     viewer
@@ -538,29 +540,6 @@ function openImage(id){
       .catch(()=>{});
 
   }
-
-  document
-    .getElementById(
-      "closeViewer"
-    )
-    .addEventListener(
-      "click",
-      () => {
-
-        if(
-          document.fullscreenElement
-        ){
-
-          document
-            .exitFullscreen()
-            .catch(()=>{});
-
-        }
-
-        viewer.remove();
-
-      }
-    );
 
 }
 
