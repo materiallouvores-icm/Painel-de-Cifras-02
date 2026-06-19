@@ -36,6 +36,26 @@ loadImages();
 
 async function loadImages(){
 
+  const cachedData =
+    localStorage.getItem(
+      CACHE_KEY
+    );
+
+  const cachedTime =
+    localStorage.getItem(
+      CACHE_TIME_KEY
+    );
+
+  const now =
+    Date.now();
+
+  if(
+    cachedData &&
+    cachedTime &&
+    now - Number(cachedTime)
+      < CACHE_DURATION
+  ){
+
     images =
       JSON.parse(cachedData);
 
@@ -58,7 +78,7 @@ const text =
 const data =
   JSON.parse(text);
 
-    images = data.images;
+    images = data;
 
     localStorage.setItem(
       CACHE_KEY,
@@ -68,11 +88,6 @@ const data =
     localStorage.setItem(
       CACHE_TIME_KEY,
       now.toString()
-    );
-
-    localStorage.setItem(
-      "painelVersao",
-      data.version
     );
 
     console.log(
