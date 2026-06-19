@@ -70,10 +70,13 @@ async function loadImages(){
   try{
 
     const response =
-      await fetch(API_URL);
+  await fetch(API_URL);
 
-    const data =
-      await response.json();
+const text =
+  await response.text();
+
+const data =
+  JSON.parse(text);
 
     images = data;
 
