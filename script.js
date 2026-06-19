@@ -36,26 +36,6 @@ loadImages();
 
 async function loadImages(){
 
-  const cachedData =
-    localStorage.getItem(
-      CACHE_KEY
-    );
-
-  const cachedTime =
-    localStorage.getItem(
-      CACHE_TIME_KEY
-    );
-
-  const now =
-    Date.now();
-
-  if(
-    cachedData &&
-    cachedTime &&
-    now - Number(cachedTime)
-      < CACHE_DURATION
-  ){
-
     images =
       JSON.parse(cachedData);
 
