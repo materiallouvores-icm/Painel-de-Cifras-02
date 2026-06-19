@@ -78,7 +78,7 @@ const text =
 const data =
   JSON.parse(text);
 
-    images = data;
+    images = data.images;
 
     localStorage.setItem(
       CACHE_KEY,
@@ -88,6 +88,11 @@ const data =
     localStorage.setItem(
       CACHE_TIME_KEY,
       now.toString()
+    );
+
+    localStorage.setItem(
+      "painelVersao",
+      data.version
     );
 
     console.log(
