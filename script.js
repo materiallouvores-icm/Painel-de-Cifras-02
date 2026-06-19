@@ -8,7 +8,7 @@ const CACHE_TIME_KEY =
 "painelCifrasCacheTime";
 
 const CACHE_DURATION =
-24 * 60 * 60 * 1000; // 24 horas
+10 * 60 * 1000; // 10 minútos
 
 const searchInput =
   document.getElementById("searchInput");
