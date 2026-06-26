@@ -13,14 +13,16 @@ const CACHE_DURATION =
 const searchInput =
   document.getElementById("searchInput");
 
-const searchBtn =
-  document.getElementById("searchBtn");
-
 const results =
   document.getElementById("results");
 
 const playlist =
   document.getElementById("playlist");
+
+searchInput.addEventListener(
+  "input",
+  searchSongs
+);
 
 let images = [];
 
@@ -29,6 +31,16 @@ let selectedSongs = [];
 let draggedIndex = null;
 
 let currentDragElement = null;
+
+function normalizeText(text){
+
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+
+}
 
 /* CARREGAMENTO */
 
@@ -108,30 +120,12 @@ const data =
 
 /* BUSCA */
 
-searchBtn.addEventListener(
-  "click",
-  searchSongs
-);
-
-searchInput.addEventListener(
-  "keypress",
-  (e) => {
-
-    if(e.key === "Enter"){
-
-      searchSongs();
-
-    }
-
-  }
-);
-
 function searchSongs(){
 
   const value =
-    searchInput.value
-      .toLowerCase()
-      .trim();
+    normalizeText(
+      searchInput.value.trim()
+    );
 
   results.innerHTML = "";
 
@@ -140,13 +134,12 @@ function searchSongs(){
   }
 
   const filtered =
-    images.filter(item =>
-
-      item.name
-        .toLowerCase()
+  images
+    .filter(item =>
+      normalizeText(item.name)
         .includes(value)
-
-    );
+    )
+    .slice(0,20);
 
   if(filtered.length === 0){
 
@@ -182,10 +175,16 @@ function searchSongs(){
 
         addToPlaylist(item);
 
+        searchInput.value = "";
+        results.innerHTML = "";
+        searchInput.focus();
+
       }
     );
 
     results.appendChild(div);
+
+    
 
   });
 
@@ -600,6 +599,5 @@ window.addEventListener(
       viewer.remove();
 
     }
-
   }
 );
