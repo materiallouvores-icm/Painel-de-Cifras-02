@@ -65,23 +65,30 @@ body{
 /* BUSCA */
 
 .search-area{
-  display:flex;
-  gap:14px;
+  width:100%;
 }
 
 /* INPUT */
 
 #searchInput{
-  flex:1;
+  width:100%;
   height:64px;
+
   border:none;
   outline:none;
+
   border-radius:18px;
-  padding:0 20px;
-  font-size:18px;
+
+  padding:0 22px;
+
+  font-size:20px;
+
   color:#fff;
+
   background:rgba(255,255,255,.03);
+
   border:1px solid rgba(255,255,255,.08);
+
   transition:.2s;
 }
 
@@ -254,17 +261,12 @@ body{
   }
 
   .search-area{
-    gap:10px;
+    width:100%;
   }
 
   #searchInput{
     height:56px;
     font-size:16px;
-  }
-
-  #searchBtn{
-    width:120px;
-    font-size:18px;
   }
 
   .playlist-title{
