@@ -322,3 +322,13 @@ body{
   user-select:none;
   -webkit-user-drag:none;
 }
+
+/* GESTO HORIZONTAL NO VISUALIZADOR */
+#fullscreenViewer{
+  touch-action:pan-y;
+  overscroll-behavior:none;
+}
+
+#fullscreenImage{
+  touch-action:pan-y;
+}
