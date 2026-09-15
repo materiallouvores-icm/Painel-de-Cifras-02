@@ -507,42 +507,192 @@ function enableTouchDrag(
 
 }
 
-/* ABRIR IMAGEM */
+/* VISUALIZADOR FULLSCREEN + NAVEGAÇÃO POR GESTO */
 
-function openImage(id){
+let currentImageIndex = -1;
+let viewerHistoryPushed = false;
 
-  const oldViewer =
+function openImage(id, updateHistory = true){
+
+  const index = selectedSongs.findIndex(
+    song => song.id === id
+  );
+
+  if(index === -1){
+    return;
+  }
+
+  currentImageIndex = index;
+
+  let viewer =
     document.getElementById(
       "fullscreenViewer"
     );
 
-  if(oldViewer){
-    oldViewer.remove();
+  if(!viewer){
+
+    viewer =
+      document.createElement("div");
+
+    viewer.id =
+      "fullscreenViewer";
+
+    viewer.innerHTML = `
+      <img
+        id="fullscreenImage"
+        src=""
+        alt="Louvor"
+        draggable="false"
+      >
+    `;
+
+    document.body.appendChild(
+      viewer
+    );
+
+    setupFullscreenSwipe(viewer);
+
   }
 
+  updateFullscreenImage();
+
+  if(updateHistory){
+
+    history.pushState(
+      { image:true },
+      ""
+    );
+
+    viewerHistoryPushed = true;
+
+  }
+}
+
+function updateFullscreenImage(){
+
   const viewer =
-    document.createElement("div");
+    document.getElementById(
+      "fullscreenViewer"
+    );
 
-  viewer.id =
-    "fullscreenViewer";
+  const image =
+    document.getElementById(
+      "fullscreenImage"
+    );
 
-  viewer.innerHTML = `
-    <img
-      id="fullscreenImage"
-      src="https://lh3.googleusercontent.com/d/${id}"
-      alt="Louvor"
-    >
-  `;
+  if(
+    !viewer ||
+    !image ||
+    currentImageIndex < 0 ||
+    currentImageIndex >= selectedSongs.length
+  ){
+    return;
+  }
 
-  document.body.appendChild(
-    viewer
+  const item =
+    selectedSongs[currentImageIndex];
+
+  image.src =
+    `https://lh3.googleusercontent.com/d/${item.id}`;
+
+  image.alt =
+    item.name || "Louvor";
+
+}
+
+function navigateFullscreen(direction){
+
+  if(
+    currentImageIndex < 0 ||
+    selectedSongs.length === 0
+  ){
+    return;
+  }
+
+  const nextIndex =
+    currentImageIndex + direction;
+
+  if(
+    nextIndex < 0 ||
+    nextIndex >= selectedSongs.length
+  ){
+    return;
+  }
+
+  currentImageIndex = nextIndex;
+  updateFullscreenImage();
+
+}
+
+function setupFullscreenSwipe(viewer){
+
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  viewer.addEventListener(
+    "touchstart",
+    (event) => {
+
+      if(event.touches.length !== 1){
+        tracking = false;
+        return;
+      }
+
+      const touch =
+        event.touches[0];
+
+      startX = touch.clientX;
+      startY = touch.clientY;
+      tracking = true;
+
+    },
+    { passive:true }
   );
 
-  history.pushState(
-  { image:true },
-  ""
+  viewer.addEventListener(
+    "touchend",
+    (event) => {
+
+      if(!tracking){
+        return;
+      }
+
+      tracking = false;
+
+      const touch =
+        event.changedTouches[0];
+
+      const deltaX =
+        touch.clientX - startX;
+
+      const deltaY =
+        touch.clientY - startY;
+
+      const minimumSwipe = 60;
+
+      // Só considera gesto horizontal quando ele é claramente maior
+      // que o movimento vertical. Isso evita trocar de louvor
+      // por acidente durante outros movimentos na tela.
+      if(
+        Math.abs(deltaX) < minimumSwipe ||
+        Math.abs(deltaX) <= Math.abs(deltaY)
+      ){
+        return;
+      }
+
+      if(deltaX < 0){
+        // Arrastar para a esquerda = próximo louvor
+        navigateFullscreen(1);
+      }else{
+        // Arrastar para a direita = louvor anterior
+        navigateFullscreen(-1);
+      }
+
+    },
+    { passive:true }
   );
-  
+
 }
 
 /* INICIAR */
@@ -567,12 +717,11 @@ window.addEventListener(
       );
 
     if(!viewer){
+      viewerHistoryPushed = false;
       return;
     }
 
-    if(
-      document.fullscreenElement
-    ){
+    if(document.fullscreenElement){
 
       document
         .exitFullscreen()
@@ -581,23 +730,8 @@ window.addEventListener(
     }
 
     viewer.remove();
+    currentImageIndex = -1;
+    viewerHistoryPushed = false;
 
-  }
-);
-
-window.addEventListener(
-  "popstate",
-  () => {
-
-    const viewer =
-      document.getElementById(
-        "fullscreenViewer"
-      );
-
-    if(viewer){
-
-      viewer.remove();
-
-    }
   }
 );
